@@ -1,0 +1,54 @@
+services:
+  gateway:
+    build: ./services/gateway
+    ports: ["8000:8000"]
+    environment:
+      DATA_SERVICE_URL: http://data:8001
+      TRAFFIC_SERVICE_URL: http://traffic:8002
+      ROUTE_SERVICE_URL: http://route:8003
+      PREDICTION_SERVICE_URL: http://prediction:8004
+      SIMULATION_SERVICE_URL: http://simulation:8005
+      EXPLANATION_SERVICE_URL: http://explanation:8006
+      LIVE_TRAFFIC_SERVICE_URL: http://live:8007
+    depends_on: [data, traffic, route, prediction, simulation, explanation, live]
+  data:
+    build: ./services/data
+    ports: ["8001:8001"]
+    volumes: ["./data/dataset:/app/data:ro"]
+  traffic:
+    build: ./services/traffic
+    ports: ["8002:8002"]
+    environment: { DATA_SERVICE_URL: http://data:8001 }
+    depends_on: [data]
+  route:
+    build: ./services/route
+    ports: ["8003:8003"]
+    environment: { DATA_SERVICE_URL: http://data:8001, TRAFFIC_SERVICE_URL: http://traffic:8002 }
+    depends_on: [data, traffic]
+  prediction:
+    build: ./services/prediction
+    ports: ["8004:8004"]
+    environment: { DATA_SERVICE_URL: http://data:8001 }
+    depends_on: [data]
+  simulation:
+    build: ./services/simulation
+    ports: ["8005:8005"]
+    environment: { DATA_SERVICE_URL: http://data:8001, TRAFFIC_SERVICE_URL: http://traffic:8002 }
+    depends_on: [data, traffic]
+  explanation:
+    build: ./services/explanation
+    ports: ["8006:8006"]
+
+  live:
+    build: ./services/live
+    ports: ["8007:8007"]
+    environment:
+      TOMTOM_API_KEY: ${TOMTOM_API_KEY:-}
+      LIVE_TRAFFIC_CACHE_TTL_SECONDS: ${LIVE_TRAFFIC_CACHE_TTL_SECONDS:-60}
+      LIVE_TRAFFIC_MAX_FLOW_REQUESTS: ${LIVE_TRAFFIC_MAX_FLOW_REQUESTS:-30}
+
+  frontend:
+    build: ./frontend
+    ports: ["5173:5173"]
+    environment: { VITE_API_URL: http://localhost:8000 }
+    depends_on: [gateway]

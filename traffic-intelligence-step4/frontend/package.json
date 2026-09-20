@@ -1,0 +1,22 @@
+{
+  "name": "urban-traffic-intelligence-frontend",
+  "private": true,
+  "version": "1.2.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "latest",
+    "axios": "latest",
+    "leaflet": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "react-leaflet": "latest",
+    "recharts": "latest",
+    "vite": "latest"
+  },
+  "devDependencies": {}
+}
